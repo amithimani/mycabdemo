@@ -1,5 +1,6 @@
 package com.newcab.backend_application.service;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.newcab.backend_application.dataaccessobject.CarRepository;
 import com.newcab.backend_application.domainobject.CarDO;
 import com.newcab.backend_application.exception.ConstraintsViolationException;
@@ -8,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.sql.rowset.serial.SerialException;
 
 @Service
 public class DefaultCarServiceImpl implements CarService {
@@ -21,11 +24,13 @@ public class DefaultCarServiceImpl implements CarService {
     }
 
     @Override
+    @HystrixCommand(commandKey=  "get", threadPoolKey="get", fallbackMethod = "fallbackfindCar", ignoreExceptions ={EntityNotFoundException.class} )
     public CarDO find(Long carId) throws EntityNotFoundException {
         return findCarChecked(carId);
     }
 
     @Override
+    @HystrixCommand(commandKey=  "create", threadPoolKey="create", fallbackMethod = "fallbackCreateCar", ignoreExceptions ={ConstraintsViolationException.class} )
     public CarDO create(CarDO carDO) throws ConstraintsViolationException {
         CarDO car;
         LOG.trace("Started Create Car for Car Obj= {}", carDO);
@@ -40,6 +45,7 @@ public class DefaultCarServiceImpl implements CarService {
 
     @Override
     @Transactional
+    @HystrixCommand(commandKey=  "delete", threadPoolKey="delete", fallbackMethod = "fallbackDeleteCar", ignoreExceptions ={EntityNotFoundException.class} )
     public void delete(Long carId) throws EntityNotFoundException {
         LOG.trace("Started Delete Car for CarId= {}", carId);
         CarDO carDO = findCarChecked(carId);
@@ -49,6 +55,7 @@ public class DefaultCarServiceImpl implements CarService {
 
     @Override
     @Transactional
+    @HystrixCommand(commandKey=  "update", threadPoolKey="update", fallbackMethod = "fallbackUpdateCar", ignoreExceptions ={EntityNotFoundException.class} )
     public void updateCarInfo(long carId, String licencePlate, Integer seatCount, Integer rating, Boolean convertible, String engineType) throws EntityNotFoundException {
         LOG.trace("Started Update Car for Car Obj= {}", carId);
         CarDO carDO = findCarChecked(carId);
@@ -66,5 +73,23 @@ public class DefaultCarServiceImpl implements CarService {
                 .filter(carDO -> carDO.getIs_active())
                 .orElseThrow(() -> new EntityNotFoundException("Could not find entity with id: " + carId));
     }
+
+    //Hystrix FallBack Method
+    public CarDO fallbackCreateCar(CarDO carDO){
+        throw new RuntimeException(String.format("Exception While trying to create Car {%s}", carDO));
+    }
+
+    public CarDO fallbackfindCar(Long carId) {
+        throw new RuntimeException(String.format("Exception While trying to Find CarId= {%s}", carId));
+    }
+
+    public CarDO fallbackDeleteCar(Long carId) {
+        throw new RuntimeException(String.format("Exception While trying to Delete CarId {%s}", carId));
+    }
+
+    public void fallbackUpdateCar(long carId, String licencePlate, Integer seatCount, Integer rating, Boolean convertible, String engineType) {
+        throw new RuntimeException(String.format("Exception While trying to Update CarId {%s}", carId));
+    }
+
 }
 
