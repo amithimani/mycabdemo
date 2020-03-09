@@ -67,17 +67,17 @@ public class DriverController {
         return DriverMapper.makeDriverDTOList(driverService.find(onlineStatus));
     }
 
-    @PostMapping("/{cardId}")
+    @PostMapping("/select")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void selectCar(@Valid @PathVariable long driverId, @RequestParam Integer carId)
+    public void selectCar(@Valid @RequestParam long driverId, @RequestParam Integer carId)
             throws ConstraintsViolationException, EntityNotFoundException {
         LOG.trace("Started Select Car for DriverID = {}, CarID = {}", driverId, carId);
         driverService.selectCar(driverId, carId);
     }
 
-    @PostMapping("/{carId}")
+    @PostMapping("/deselect")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void deSelectCar(@Valid @PathVariable long driverId, @RequestParam Integer carId)
+    public void deSelectCar(@Valid @RequestParam long driverId, @RequestParam Integer carId)
             throws ConstraintsViolationException, EntityNotFoundException {
         LOG.trace("Started DeSelect Car for DriverID = {}, CarID = {}", driverId, carId);
         driverService.deSelectCar(driverId, carId);
