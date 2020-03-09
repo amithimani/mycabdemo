@@ -38,7 +38,7 @@ public class BackendApplication extends WebMvcConfigurerAdapter{
 
 
 	private ApiInfo generateApiInfo() {
-		return new ApiInfo("NewCab Back End Test Service", "This service is to showcase the technology knowledge of a server applicantion.", "Version 1.0 - mw",
+		return new ApiInfo("NewCab Back End Test Service", "This service is to showcase the technology knowledge of a server applicantion.", "Version 1.0",
 				"urn:tos", "contact@newcab.com", "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0");
 	}
 
