@@ -37,6 +37,7 @@ Back End api that provides services for
 TODO:
 * Global exception handler 
 * User Authentication and Authorization
+* Enhance business functionality
 * BDD for business case validation
 * Sonar for code coverage and quality
 * Performance measurement and improvement
