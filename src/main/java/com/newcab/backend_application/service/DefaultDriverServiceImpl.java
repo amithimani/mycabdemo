@@ -1,6 +1,8 @@
 package com.newcab.backend_application.service;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.newcab.backend_application.dataaccessobject.DriverRepository;
+import com.newcab.backend_application.domainobject.CarDO;
 import com.newcab.backend_application.domainobject.DriverDO;
 import com.newcab.backend_application.exception.CarAlreadyInUseException;
 import com.newcab.backend_application.exception.ConstraintsViolationException;
@@ -40,6 +42,7 @@ public class DefaultDriverServiceImpl implements DriverService {
      * @throws EntityNotFoundException if no driver with the given id was found.
      */
     @Override
+    @HystrixCommand(commandKey=  "get", threadPoolKey="get", fallbackMethod = "fallbackfindDriver", ignoreExceptions ={EntityNotFoundException.class} )
     public DriverDO find(Long driverId) throws EntityNotFoundException {
         return findDriverChecked(driverId);
     }
@@ -53,6 +56,7 @@ public class DefaultDriverServiceImpl implements DriverService {
      * @throws ConstraintsViolationException if a driver already exists with the given username, ... .
      */
     @Override
+    @HystrixCommand(commandKey=  "create", threadPoolKey="create", fallbackMethod = "fallbackCreateDriver", ignoreExceptions ={ConstraintsViolationException.class} )
     public DriverDO create(DriverDO driverDO) throws ConstraintsViolationException {
         DriverDO driver;
         try {
@@ -73,9 +77,11 @@ public class DefaultDriverServiceImpl implements DriverService {
      */
     @Override
     @Transactional
+    @HystrixCommand(commandKey=  "delete", threadPoolKey="delete", fallbackMethod = "fallbackDeleteDriver", ignoreExceptions ={EntityNotFoundException.class} )
     public void delete(Long driverId) throws EntityNotFoundException {
         DriverDO driverDO = findDriverChecked(driverId);
         driverDO.setDeleted(true);
+        driverRepository.save(driverDO);
     }
 
 
@@ -89,9 +95,11 @@ public class DefaultDriverServiceImpl implements DriverService {
      */
     @Override
     @Transactional
+    @HystrixCommand(commandKey=  "update", threadPoolKey="update", fallbackMethod = "fallbackUpdateDriver", ignoreExceptions ={EntityNotFoundException.class} )
     public void updateLocation(long driverId, double longitude, double latitude) throws EntityNotFoundException {
         DriverDO driverDO = findDriverChecked(driverId);
         driverDO.setCoordinate(new GeoCoordinate(latitude, longitude));
+        driverRepository.save(driverDO);
     }
 
 
@@ -101,7 +109,9 @@ public class DefaultDriverServiceImpl implements DriverService {
      * @param onlineStatus
      */
     @Override
+    @HystrixCommand(commandKey=  "get", threadPoolKey="get", fallbackMethod = "fallbackfindDriverBasedOnStatus", ignoreExceptions ={EntityNotFoundException.class} )
     public List<DriverDO> find(OnlineStatus onlineStatus) {
+
         return driverRepository.findByOnlineStatus(onlineStatus);
     }
 
@@ -113,6 +123,7 @@ public class DefaultDriverServiceImpl implements DriverService {
 
     @Override
     @Transactional
+    @HystrixCommand(commandKey=  "get", threadPoolKey="get", fallbackMethod = "fallbackSelectCar", ignoreExceptions ={EntityNotFoundException.class} )
     public void selectCar(Long driverId, Integer carId) throws EntityNotFoundException {
 
         DriverDO driverDO = findDriverChecked(driverId);
@@ -120,16 +131,43 @@ public class DefaultDriverServiceImpl implements DriverService {
             throw new CarAlreadyInUseException();
         }
         driverDO.setCarIdSelected(carId);
-
+        driverRepository.save(driverDO);
     }
 
     @Override
     @Transactional
+    @HystrixCommand(commandKey=  "get", threadPoolKey="get", fallbackMethod = "fallbackSelectCar", ignoreExceptions ={EntityNotFoundException.class} )
     public void deSelectCar(Long driverId, Integer carId) throws EntityNotFoundException {
 
         DriverDO driverDO = findDriverChecked(driverId);
         driverDO.setCarIdSelected(null);
+        driverRepository.save(driverDO);
 
     }
 
+    //Hystrix FallBack Method
+    public CarDO fallbackCreateDriver(DriverDO driverDO){
+        throw new RuntimeException(String.format("Exception While trying to create Driver {%s}" ,driverDO));
+    }
+
+    public CarDO fallbackUpdateDriver(long driverId, double longitude, double latitude){
+        throw new RuntimeException(String.format("Exception While trying to update Driver location for driverID {%s}" ,driverId));
+    }
+
+    public void fallbackDeleteDriver(Long driverId){
+        throw new RuntimeException(String.format("Exception While trying to delete Driver with driverID= {%s}" ,driverId));
+    }
+
+
+    public void fallbackfindDriver(Long driverId){
+        throw new RuntimeException(String.format("Exception While trying to find Driver with driverID= {%s}" ,driverId));
+    }
+
+    public List<DriverDO> fallbackfindDriverBasedOnStatus(OnlineStatus onlineStatus){
+        throw new RuntimeException(String.format("Exception While trying to find Driver with status= {%s}" ,onlineStatus));
+    }
+
+    public void fallbackSelectCar(Long driverId, Integer carId){
+        throw new RuntimeException(String.format("Exception While trying to select Car operation, Driverid ={%s} and CardID={%s}" ,driverId, carId));
+    }
 }
