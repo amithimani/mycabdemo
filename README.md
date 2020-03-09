@@ -27,17 +27,18 @@ Back End api that provides services for
 
 
 ## Important Information About Application
-* Application is implemented using DAO design pattern
 * Application is using logger intercepter
 * Request body/parameters are validated using Javax annotation 
 * All the functional flow has unit testcase
 * Application is using in-memory H2 database, sample data is created using data.sql file
 * Application throws custom exceptions
+* Hystrix command for database calls
 
 TODO:
-* Hystrix for database calls
-* global exception handler 
-* User Identity and authorization
+* Global exception handler 
+* User Authentication and Authorization
+* BDD for business case validation
+* Sonar for code coverage and quality
 * Performance measurement and improvement
 
 
