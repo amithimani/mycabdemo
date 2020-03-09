@@ -7,6 +7,7 @@ import com.newcab.backend_application.exception.EntityNotFoundException;
 import com.newcab.backend_application.mapper.DriverMapper;
 import com.newcab.backend_application.service.DriverService;
 import com.newcab.backend_application.util.OnlineStatus;
+import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
 import java.util.List;
 
 @RestController
@@ -54,7 +56,7 @@ public class DriverController {
 
     @PutMapping("/{driverId}")
     public void updateLocation(
-            @PathVariable long driverId, @RequestParam double longitude, @RequestParam double latitude)
+            @PathVariable long driverId, @Range(min= -180, max = 180) @RequestParam double longitude, @Range (min= -90, max = 90) @RequestParam double latitude)
             throws EntityNotFoundException {
         LOG.trace("Started updateLocation for Driver ID = {}", driverId);
         driverService.updateLocation(driverId, longitude, latitude);
