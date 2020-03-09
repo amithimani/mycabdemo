@@ -1,0 +1,91 @@
+spring:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    show-sql: true
+  hibernate:
+    ddl-auto: create-drop
+
+logging:
+  level:
+    io:
+      swagger:
+        models:
+          parameters:
+            AbstractSerializableParameter: ERROR
+hystrix:
+  threadpool:
+    create:
+      coreSize: 10
+      maximumSize: 50
+      allowMaximumSizeToDivergeFromCoreSize: true
+    get:
+      coreSize: 10
+      maximumSize: 50
+      allowMaximumSizeToDivergeFromCoreSize: true
+    update:
+      coreSize: 10
+      maximumSize: 50
+      allowMaximumSizeToDivergeFromCoreSize: true
+    delete:
+        coreSize: 10
+        maximumSize: 50
+        allowMaximumSizeToDivergeFromCoreSize: true
+  command:
+    create:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 1000
+            interruptOnTimeout: true
+          strategy: THREAD
+      fallback:
+        enabled: true
+      circuitBreaker:
+        enabled: true
+        sleepWindowInMilliseconds: 250
+        requestVolumeThreshold: 5
+        errorThresholdPercentage: 50
+    get:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 1000
+            interruptOnTimeout: true
+          strategy: THREAD
+      fallback:
+        enabled: true
+      circuitBreaker:
+        enabled: true
+        sleepWindowInMilliseconds: 250
+        requestVolumeThreshold: 5
+        errorThresholdPercentage: 50
+    update:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 1000
+            interruptOnTimeout: true
+          strategy: THREAD
+      fallback:
+        enabled: true
+      circuitBreaker:
+        enabled: true
+        sleepWindowInMilliseconds: 250
+        requestVolumeThreshold: 5
+        errorThresholdPercentage: 50
+    delete:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 1000
+            interruptOnTimeout: true
+          strategy: THREAD
+      fallback:
+        enabled: true
+      circuitBreaker:
+        enabled: true
+        sleepWindowInMilliseconds: 250
+        requestVolumeThreshold: 5
+        errorThresholdPercentage: 50
