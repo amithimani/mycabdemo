@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.newcab</groupId>
-	<artifactId>backend_application</artifactId>
+	<artifactId>mycabdemo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>backend_application</name>
-	<description>Demo project for New Cab</description>
+	<name>mycabdemo</name>
+	<description>Demo project for New Cab booking and driver search</description>
 
 	<properties>
 		<java.version>1.8</java.version>
