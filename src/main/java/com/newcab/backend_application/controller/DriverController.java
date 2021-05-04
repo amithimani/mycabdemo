@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping("v1/drivers")
@@ -34,6 +35,11 @@ public class DriverController {
     @GetMapping("/{driverId}")
     public DriverDTO getDriver(@PathVariable long driverId) throws EntityNotFoundException {
         LOG.trace("Started get Driver for Driver ID = {}", driverId);
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return DriverMapper.makeDriverDTO(driverService.find(driverId));
     }
 
@@ -42,6 +48,11 @@ public class DriverController {
     @ResponseStatus(HttpStatus.CREATED)
     public DriverDTO createDriver(@Valid @RequestBody DriverDTO driverDTO) throws ConstraintsViolationException {
         LOG.trace("Started Create Driver for Driver Object = {}", driverDTO);
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         DriverDO driverDO = DriverMapper.makeDriverDO(driverDTO);
         return DriverMapper.makeDriverDTO(driverService.create(driverDO));
     }
@@ -65,6 +76,12 @@ public class DriverController {
 
     @GetMapping
     public List<DriverDTO> findDrivers(@RequestParam OnlineStatus onlineStatus) {
+
+        try {
+            Thread.sleep(new Random().nextInt(1000));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         LOG.trace("Started Find Drivers for OnlineStatus = {}", onlineStatus);
         return DriverMapper.makeDriverDTOList(driverService.find(onlineStatus));
     }
